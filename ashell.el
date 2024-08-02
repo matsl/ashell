@@ -110,11 +110,15 @@ With optional HIDE-WINDOW do not display the shell output buffer.  Keep
       (string-match "<\\(.*\\)>" (buffer-name))
       (match-string 1 (buffer-name)))))
 
+(define-ibuffer-column ashell-process-active (:name "P")
+  "Show a P for buffers with active processes."
+  (if (get-buffer-process buffer) "P" " "))
+
 (defun ashell-ibuffer ()
   "Show all ashell buffers in ibuffer."
   (interactive)
   (let ((format
-         '((mark modified read-only " "
+         '((mark (ashell-process-active) read-only " "
                  (ashell-number 2 3 :left)
                  " "
                  (size 6 -1 :right)
@@ -122,7 +126,7 @@ With optional HIDE-WINDOW do not display the shell output buffer.  Keep
                  (filename 35 35 :left :elide)
                  " > "
                  ashell-cmd)
-           (mark modified read-only " "
+           (mark (ashell-process-active) read-only " "
                  (ashell-number 2 3 :left)
                  " "
                  (size 6 -1 :right)
