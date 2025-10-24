@@ -1,6 +1,6 @@
 ;;; hib-ashell.el --- run hyperbole shell actions using ashell    -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2017-2024 Free Software Foundation, Inc.
+;; Copyright (C) 2017-2025 Free Software Foundation, Inc.
 
 ;; Author: Mats Lidell <matsl@gnu.org>
 ;; Keywords: processes, hypermedia
@@ -40,13 +40,12 @@
 	   (y-or-n-p (format "Omit cmd from output (default = %s)? "
 			     default1))
 	   nil)))
-  (let ((owind (selected-window)))
+  (let ((owind (selected-window))
+        (cmd (concat "cd " (shell-quote-argument (expand-file-name default-directory) t) "; " shell-cmd)))
     (unwind-protect
- 	(progn
- 	  (setq shell-cmd (concat "cd " default-directory "; " shell-cmd))
- 	  (ashell-command shell-cmd internal-cmd))
+ 	(ashell-command cmd internal-cmd)
       (select-window owind))))
- 
+
 (defact exec-window-cmd (shell-cmd)
   "Executes an external window-based SHELL-CMD string asynchronously."
   (interactive
@@ -54,7 +53,7 @@
      (list (hargs:read "Shell cmd: "
 		       '(lambda (cmd) (not (string= cmd "")))
 		       default "Enter a shell command." 'string))))
-  (let ((cmd (concat "cd " default-directory "; " shell-cmd)))
+  (let ((cmd (concat "cd " (shell-quote-argument (expand-file-name default-directory) t) "; " shell-cmd)))
     (save-excursion
       (ashell-command cmd t t)
       (message "Executing: %s" shell-cmd))))
